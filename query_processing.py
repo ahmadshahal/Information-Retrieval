@@ -8,54 +8,62 @@ import ir_datasets
 from text_preprocessing import get_preprocessed_text_terms
 
 
-def __get_queries_corpus(dataset_name: str) -> Dict[str, str]:
+def __get_corpus(dataset_name: str) -> Dict[str, str]:
     """
-    Get a corpus of queries for a given dataset name.
+    Get a corpus of documents for a given dataset name.
 
     Args:
-        dataset_name: The name of the dataset to use. Can be either "technology" or "quora".
+        dataset_name: The name of the dataset to use. Can be either "lifestyle" or "antique".
 
     Returns:
-        A dictionary mapping query IDs to query content.
+        A dictionary mapping document IDs to document content.
     """
-    if dataset_name == "technology":
-        forum_subset = ir_datasets.load("lotte/technology/test/forum")
-        search_subset = ir_datasets.load("lotte/technology/test/search")
-        queries_corpus = {}
-        for query_id, query_content in forum_subset.queries_iter():
-            queries_corpus[query_id] = query_content
-        for query_id, query_content in search_subset.queries_iter():
-            queries_corpus[str(int(query_id) + forum_subset.queries_count())] = query_content
-        queries_corpus = dict(queries_corpus)
-    else:  # dataset_name == "quora":
-        queries_corpus = dict(ir_datasets.load("beir/quora/test").queries_iter())
-    return queries_corpus
+    if dataset_name == "lifestyle":
+        
+        # TODO: 200,000 documents should be taken from the dataset
+        random_corpus = dict(ir_datasets.load("lotte/lifestyle/dev").docs_iter()[:1000])
+        random_corpus_ids = set(random_corpus.keys())
+
+        forum_qrels = list(ir_datasets.load("lotte/lifestyle/dev/forum").qrels_iter())
+        search_qrels = list(ir_datasets.load("lotte/lifestyle/dev/search").qrels_iter())
+
+        forum_qrels_docs_ids = set(qrel.doc_id for qrel in forum_qrels)
+        search_qrels_docs_ids = set(qrel.doc_id for qrel in search_qrels)
+
+        qrels_docs_ids = forum_qrels_docs_ids.union(search_qrels_docs_ids)
+
+        # Documents that exist in the qrels are also taken in consideration
+        docs_ids = random_corpus_ids.union(qrels_docs_ids)
+
+        docs_store = ir_datasets.load("lotte/lifestyle/dev").docs_store()
+
+        mapped_docs = dict(docs_store.get_many(docs_ids))
+
+        corpus = {doc_id: doc.text for doc_id, doc in mapped_docs.items()}
+
+    else:  # dataset_name == "antique":
+
+        # TODO: 200,000 documents should be taken from the dataset
+        random_corpus = dict(ir_datasets.load("antique/train").docs_iter()[:1000])
+        random_corpus_ids = set(random_corpus.keys())
+
+        qrels = list(ir_datasets.load("antique/train").qrels_iter())
+        qrels_docs_ids = set(qrel.doc_id for qrel in qrels)
+
+        # Documents that exist in the qrels are also taken in consideration
+        docs_ids = random_corpus_ids.union(qrels_docs_ids)
+
+        docs_store = ir_datasets.load("antique/train").docs_store()
+
+        mapped_docs = dict(docs_store.get_many(docs_ids))
+
+        corpus = {doc_id: doc.text for doc_id, doc in mapped_docs.items()}
+
+    return corpus
 
 
 def _get_preprocessed_text_terms(text: str, dataset_name: str):
     return get_preprocessed_text_terms(text, dataset_name)
-
-
-def create_unweighted_inverted_index(dataset_name) -> None:
-    corpus = __get_queries_corpus(dataset_name)
-    inverted_index = defaultdict(list)
-    for query_id, query_content in corpus.items():
-        terms = _get_preprocessed_text_terms(query_content, dataset_name)
-        unique_terms = set(terms)
-        for term in unique_terms:
-            inverted_index[term].append(query_id)
-    # storing inverted index in shelve
-    # Open a "shelve" file to store the inverted index
-    with shelve.open('db/' + dataset_name + '_queries_inverted_index.db') as db:
-        # Store the inverted index in the "shelve" file
-        db['inverted_index'] = inverted_index
-
-
-def _get_unweighted_inverted_index(dataset_name) -> Dict[str, list]:
-    # Inverted index
-    with shelve.open('db/' + dataset_name + '_queries_inverted_index.db') as db:
-        queries_inverted_index = db['inverted_index']
-    return queries_inverted_index
 
 
 def _calculate_tf(query: str, dataset_name: str) -> Dict[str, float]:
@@ -78,28 +86,36 @@ def _calculate_tf(query: str, dataset_name: str) -> Dict[str, float]:
     return tf
 
 
-def _calculate_idf(corpus: Dict[str, str], unweighted_inverted_index: Dict[str, list]) -> Dict[str, float]:
+def _calculate_idf(
+    query: str,
+    corpus: Dict[str, str],
+    dataset_name: str,
+    weighted_inverted_index: Dict[str, list],
+) -> Dict[str, float]:
     """
-    Calculate the inverse document frequency (IDF) for a given corpus and unweighted inverted index.
-
-    Args:
-        corpus: A dictionary mapping query IDs to query content.
-        unweighted_inverted_index: An unweighted inverted index for the given corpus.
+    Calculate the inverse document frequency (IDF) for a given corpus and query.
 
     Returns:
         A dictionary representing the IDF for the given corpus. The keys are terms and the values are the IDF values for
          each term.
     """
     idf = {}
-    n_queries = len(corpus)
-    # inverted_index = create_inverted_index(corpus)
-    for term, query_ids in unweighted_inverted_index.items():
-        idf[term] = math.log10(n_queries / len(query_ids))
+    terms = _get_preprocessed_text_terms(query, dataset_name)
+    n_documents = len(corpus)
+    for term in terms:
+        count = len(weighted_inverted_index[term])
+        if(count != 0):
+            idf[term] = math.log10(n_documents / count)
+        else:
+            idf[term] = 0
     return idf
 
 
-def calculate_query_tfidf(query: str, dataset_name: str) -> Dict[
-    str, float]:
+def calculate_query_tfidf(
+    query: str,
+    dataset_name: str,
+    weighted_inverted_index: Dict[str, list],
+) -> Dict[str, float]:
     """
     Calculate the TF-IDF for a given query and dataset name.
 
@@ -113,13 +129,12 @@ def calculate_query_tfidf(query: str, dataset_name: str) -> Dict[
     """
     tfidf = {}
     tf = _calculate_tf(query, dataset_name)
-    corpus = __get_queries_corpus(dataset_name)
-    unweighted_inverted_index = _get_unweighted_inverted_index(dataset_name)
-    idf = _calculate_idf(corpus, unweighted_inverted_index)
+    corpus = __get_corpus(dataset_name)
+    idf = _calculate_idf(query, corpus, dataset_name, weighted_inverted_index)
     for term in tf:
-        tfidf[term] = tf[term] * idf.get(term, math.log10(
-            len(corpus) / 1))  # we need a default value of idf in case of a new term in query(high idf)
+        tfidf[term] = tf[term] * idf.get(term, math.log10(len(corpus) / 1))
+        # we need a default value of idf in case of a new term in query(high idf)
     return tfidf
 
 
-__all__ = [calculate_query_tfidf, create_unweighted_inverted_index]
+__all__ = [calculate_query_tfidf]

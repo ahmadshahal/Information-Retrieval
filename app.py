@@ -41,7 +41,7 @@ def get_inverted_index():
 @app.route('/inverted-index', methods=['POST'])
 @cross_origin()
 def create_inverted_index():
-    dataset = request.get_json()['dataset']
+    dataset = request.args.get('dataset')
     thread = threading.Thread(target=create_weighted_inverted_index(dataset))
     thread.start()
     return "Start creating..."
@@ -80,4 +80,4 @@ def get_ranking():
 
 if __name__ == "__main__":
     set_inverted_index_store_global_variables()
-    app.run(debug=True)
+    app.run(port=8000, debug=True)

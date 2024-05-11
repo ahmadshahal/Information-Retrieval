@@ -9,14 +9,13 @@ from nltk.tokenize import RegexpTokenizer
 from nltk.tokenize import word_tokenize
 from spellchecker import SpellChecker
 
-
 def get_preprocessed_text_terms(text: str, dataset_name: str) -> list:
     """
     Apply text processing steps of a given text
 
     Args:
         text: The text you want to process
-        dataset_name: The name of the dataset to use. Can be either "technology" or "quora".
+        dataset_name: The name of the dataset to use. Can be either "lifestyle" or "antique".
 
     Returns:
         A list of cleansing tokens
@@ -27,7 +26,7 @@ def get_preprocessed_text_terms(text: str, dataset_name: str) -> list:
     lowercase_tokens = _lowercase_tokens(tokens)
     # 3) Cleaning: remove punctuation tokens
     cleaned_tokens = _remove_punctuations(lowercase_tokens)
-    # 4) Filtration: remove stop words "if dataset is quora, the question words will not be removed"
+    # 4) Filtration: remove stop words "if dataset is lifestyle, the question words will not be removed"
     filtered_tokens = _filter_tokens(cleaned_tokens, dataset_name)
     d = _normalize_dates(filtered_tokens)
     c = _normalize_country_names(d)
@@ -125,14 +124,14 @@ def _filter_tokens(tokens: list, dataset_name: str) -> list:
              tokens: The list of token you want to process
 
          Returns:
-            If dataset_name is quora  A list of tokens without stop words except the question words
+            If dataset_name is lifestyle A list of tokens without stop words except the question words
             Else A list of tokens without stop words
      """
     stop_words = set(stopwords.words('english'))
 
     question_words = {'what', 'who', 'whom', 'whose', 'which', 'when', 'where', 'why', 'how', 'how much', 'how many',
                       'how long', 'how often', 'how far', 'how old', 'how come'}
-    if dataset_name == 'technology':
+    if dataset_name == 'lifestyle':
         filtered_stop_words = stop_words
     else:
         filtered_stop_words = stop_words - question_words
@@ -189,7 +188,7 @@ def _normalize_dates(tokens: list) -> list:
                     break  # Stop trying format strings when one succeeds
                 except ValueError:
                     pass
-            else:
+            else:  # else block will not be executed if the for was stopped by a break keyword
                 continue  # Skip the token if none of the format strings succeeded
             # Replace the matched date string with the normalized date string
             normalized_date = date_obj.strftime('%Y-%m-%d')
@@ -211,15 +210,16 @@ def _normalize_country_names(tokens: list) -> list:
     """
 
     # Create a set of country names for faster lookup
+    # ex. {'USA', 'KSA'}
     country_codes = set(country.alpha_3 for country in pycountry.countries)
-
+    
     # Loop over the tokens and update country names if they match a country name
     for token in tokens.copy():
         if token.upper() in country_codes:
             try:
                 country = pycountry.countries.lookup(token.upper())
                 tokens.remove(token)
-                tokens.append(country.name)
+                tokens.append(country.name) # 'USA' -> 'United States of America'
             except LookupError:
                 pass
 
@@ -241,6 +241,5 @@ def _lemmatize_tokens(tokens: list) -> list:
     lemmatizer = WordNetLemmatizer()
     lemmatized_tokens = [lemmatizer.lemmatize(token) for token in tokens]
     return lemmatized_tokens
-
 
 __all__ = ['get_preprocessed_text_terms']

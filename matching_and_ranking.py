@@ -36,7 +36,7 @@ def _get_document_vectors(documents: Set[str], dataset_name: str) -> Dict[str, D
     Get the TF-IDF vector for a specified documents in a given dataset.
 
     Args:
-        dataset_name (str): The name of the dataset to use. Can be either "technology" or "quora".
+        dataset_name (str): The name of the dataset to use. Can be either "lifestyle" or "antique".
         documents set[str]: documents to get the vector for.
 
     Returns:
@@ -49,9 +49,9 @@ def _get_document_vectors(documents: Set[str], dataset_name: str) -> Dict[str, D
     return document_vectors
 
 
-def _get_matrix_from_documents_and_query_vectors(document_vectors: Dict[str, Dict[str, float]],
-                                                 query_vector: Dict[str, float]) \
-        -> Tuple[np.ndarray, np.ndarray, List[str]]:
+def _get_matrix_from_documents_and_query_vectors(
+    document_vectors: Dict[str, Dict[str, float]],
+    query_vector: Dict[str, float]) -> Tuple[np.ndarray, np.ndarray, List[str]]:
     """
         Convert document_vectors and query_vector into a matrix.
 
@@ -81,14 +81,14 @@ def ranking(query: str, dataset: str) -> Dict[str, float]:
 
     Args:
         query (str): the query to calculate cosine similarity for with documents
-        dataset (str): The name of the dataset to use. Can be either "technology" or "quora".
+        dataset (str): The name of the dataset to use. Can be either "lifestyle" or "antique".
 
     Returns:
         Dict the keys is the docs_id and the values are the similarity sorted in descending order
     """
     # first function
     weighted_inverted_index = get_weighted_inverted_index(dataset)
-    query_vector = calculate_query_tfidf(query, dataset)
+    query_vector = calculate_query_tfidf(query, dataset, weighted_inverted_index)
     related_documents = _get_documents_related_to_query(weighted_inverted_index, query_vector)
 
     # second function

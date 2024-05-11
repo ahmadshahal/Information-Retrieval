@@ -1,4 +1,5 @@
 from typing import Dict, Set, List, Tuple
+from collections import OrderedDict
 
 import numpy as np
 from sklearn.feature_extraction import DictVectorizer
@@ -75,7 +76,7 @@ def _get_matrix_from_documents_and_query_vectors(
     return docs_terms_matrix, query_matrix, doc_ids
 
 
-def ranking(query: str, dataset: str) -> Dict[str, float]:
+def ranking(query: str, dataset: str) -> OrderedDict[str, float]:
     """
     ranking the documents by calculate the cosine similarity between a query and the documents in the docs_terms_matrix
 
@@ -99,7 +100,7 @@ def ranking(query: str, dataset: str) -> Dict[str, float]:
         matrix, query_matrix, doc_ids = _get_matrix_from_documents_and_query_vectors(document_vectors, query_vector)
         similarity = cosine_similarity(query_matrix, matrix)
         document_ranking = dict(zip(doc_ids, similarity.flatten()))
-        sorted_dict = dict(sorted(document_ranking.items(), key=lambda item: item[1], reverse=True))
+        sorted_dict = OrderedDict(sorted(document_ranking.items(), key=lambda item: item[1], reverse=True))
         return sorted_dict
     except ValueError:
         return {}

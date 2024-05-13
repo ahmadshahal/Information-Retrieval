@@ -33,53 +33,12 @@ def get_processed_text():
     dataset = request.args.get('dataset')
     return get_preprocessed_text_terms(text, dataset)
 
-
-@app.route('/inverted-index', methods=['GET'])
-@cross_origin()
-def get_inverted_index():
-    dataset = request.args.get('dataset')
-    return get_weighted_inverted_index(dataset)
-
-
-@app.route('/inverted-index', methods=['POST'])
-@cross_origin()
-def create_inverted_index():
-    dataset = request.args.get('dataset')
-    thread = threading.Thread(target=create_weighted_inverted_index(dataset))
-    thread.start()
-    return "Start creating..."
-
-
-@app.route('/document-vector', methods=['GET'])
-@cross_origin()
-def document_vector():
-    dataset = request.args.get('dataset')
-    doc_id = request.args.get('doc_id')
-    return get_document_vector(dataset, doc_id)
-
-
-@app.route('/documents-vector', methods=['GET'])
-@cross_origin()
-def documents_vector():
-    dataset = request.args.get('dataset')
-    return get_documents_vector(dataset)
-
-
-@app.route('/query-tfidf', methods=['GET'])
-@cross_origin()
-def get_query_tfidf():
-    dataset = request.args.get('dataset')
-    query = request.args.get('query')
-    return calculate_query_tfidf(query, dataset)
-
-
 @app.route('/ranking', methods=['GET'])
 @cross_origin()
 def get_ranking() -> OrderedDict[str, float]:
     dataset = request.args.get('dataset')
     query = request.args.get('query')
-    ranking_dict = ranking(query, dataset)
-    return jsonify(ranking_dict)
+    return ranking(query, dataset)
 
 
 if __name__ == "__main__":

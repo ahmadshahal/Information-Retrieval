@@ -9,7 +9,7 @@ from nltk.tokenize import RegexpTokenizer
 from nltk.tokenize import word_tokenize
 from spellchecker import SpellChecker
 
-def get_preprocessed_text_terms(text: str, dataset_name: str) -> list:
+def get_preprocessed_text_terms(text: str) -> list:
     """
     Apply text processing steps of a given text
 
@@ -116,7 +116,7 @@ def _remove_punctuations(tokens: list) -> list:
     return non_punctuations_tokens
 
 
-def _filter_tokens(tokens: list, dataset_name: str) -> list:
+def _filter_tokens(tokens: list) -> list:
     """
         Remove stop words from a given list of tokens
 
@@ -128,15 +128,7 @@ def _filter_tokens(tokens: list, dataset_name: str) -> list:
             Else A list of tokens without stop words
      """
     stop_words = set(stopwords.words('english'))
-
-    question_words = {'what', 'who', 'whom', 'whose', 'which', 'when', 'where', 'why', 'how', 'how much', 'how many',
-                      'how long', 'how often', 'how far', 'how old', 'how come'}
-    if dataset_name == 'lifestyle':
-        filtered_stop_words = stop_words
-    else:
-        filtered_stop_words = stop_words - question_words
-
-    filtered_tokens = [token for token in tokens if token not in filtered_stop_words]
+    filtered_tokens = [token for token in tokens if token not in stop_words]
 
     return filtered_tokens
 

@@ -14,11 +14,12 @@ def _process_query(query: str) -> str:
     return ' '.join(processed_query)
 
 
-def match_and_rank(query: str, dataset_name: str, similarity_threshold = 0.1):
+def match_and_rank(query: str, dataset_name: str, similarity_threshold = 0.001):
     processed_query = _process_query(query)
 
     loaded_vectorizer = get_vectorizer(dataset_name)
     loaded_tfidf_matrix = get_tfidf_matrix(dataset_name)
+    
     query_vector = loaded_vectorizer.transform([processed_query])
 
     similarity_scores = cosine_similarity(query_vector, loaded_tfidf_matrix)

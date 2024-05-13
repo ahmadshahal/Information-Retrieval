@@ -27,7 +27,7 @@ def get_preprocessed_text_terms(text: str) -> list:
     # 3) Cleaning: remove punctuation tokens
     cleaned_tokens = _remove_punctuations(lowercase_tokens)
     # 4) Filtration: remove stop words "if dataset is lifestyle, the question words will not be removed"
-    filtered_tokens = _filter_tokens(cleaned_tokens, dataset_name)
+    filtered_tokens = _filter_tokens(cleaned_tokens)
     d = _normalize_dates(filtered_tokens)
     c = _normalize_country_names(d)
     # 5) Stemming: stemming the tokens

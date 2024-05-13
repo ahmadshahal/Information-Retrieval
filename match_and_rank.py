@@ -14,7 +14,7 @@ def _process_query(query: str) -> str:
     return ' '.join(processed_query)
 
 
-def match_and_rank(query: str, dataset_name: str, similarity_threshold = 0.001):
+def match_and_rank(query: str, dataset_name: str, similarity_threshold = 0.1):
     processed_query = _process_query(query)
 
     loaded_vectorizer = get_vectorizer(dataset_name)
@@ -27,9 +27,10 @@ def match_and_rank(query: str, dataset_name: str, similarity_threshold = 0.001):
     corpus = get_corpus(dataset_name)
     doc_ids = corpus.keys()
 
-    filtered_similarities = [score for score in similarity_scores.flatten() if score >= similarity_threshold]
+    document_ranking = dict(zip(doc_ids, similarity_scores.flatten()))
+    
+    filtered_documents = {key: value for key, value in document_ranking.items() if value >= similarity_threshold}
 
-    document_ranking = dict(zip(doc_ids, filtered_similarities))
-    sorted_dict = sorted(document_ranking.items(), key=lambda item: item[1], reverse=True)
+    sorted_dict = sorted(filtered_documents.items(), key=lambda item: item[1], reverse=True)
 
     return OrderedDict(sorted_dict)

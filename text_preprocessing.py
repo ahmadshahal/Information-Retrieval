@@ -32,8 +32,8 @@ def get_preprocessed_text_terms(text: str) -> list:
     d = _normalize_dates(filtered_tokens)
     c = _normalize_country_names(d)
     # 5) Stemming: stemming the tokens
-    #stemmed_tokens = _stem_tokens(c)
-    lemmitized_tokens = _lemmatize_tokens(c)
+    stemmed_tokens = _stem_tokens(c)
+    lemmitized_tokens = _lemmatize_tokens(stemmed_tokens)
 
     return lemmitized_tokens
 

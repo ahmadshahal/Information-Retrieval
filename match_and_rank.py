@@ -14,7 +14,7 @@ def _process_query(query: str) -> str:
     return ' '.join(processed_query)
 
 
-def match_and_rank(query: str, dataset_name: str, similarity_threshold = 0.05):
+def match_and_rank(query: str, dataset_name: str, similarity_threshold = 0.01):
     processed_query = _process_query(query)
 
     loaded_vectorizer = get_vectorizer(dataset_name)

@@ -46,32 +46,6 @@ def _remove_urls(text: str) -> str:
     return re.sub("http[^\s]*", "", text, flags=re.IGNORECASE)
 
 
-def _spell_check_tokens(tokens: list, query: bool):
-    if query:
-        spell = SpellChecker()
-
-        word_set = set(words.words())
-
-        # Create a list to store the corrected tokens
-        corrected_tokens = []
-
-        # Spell check each token
-        for token in tokens:
-            if token in word_set:
-                corrected_tokens.append(token)
-            else:
-                # Find the highest-ranked suggestion using the spell-checker
-                suggestions = spell.candidates(token)
-                if suggestions:
-                    corrected_tokens.append(spell.correction(token))
-                else:
-                    corrected_tokens.append(token)
-
-        return corrected_tokens
-    else:
-        return tokens
-
-
 def _lowercase_tokens(tokens: list) -> list:
     return [token.lower() for token in tokens]
 

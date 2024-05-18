@@ -5,7 +5,7 @@ from flask_cors import CORS, cross_origin
 from collections import OrderedDict
 
 from match_and_rank import match_and_rank
-from query_correction import correct_query
+from query_correction import spell_check_query
 
 # from search_query_processing import get_search_result
 from text_preprocessing import get_preprocessed_text_terms
@@ -34,10 +34,10 @@ def get_processed_text():
 
 @app.route('/correct-query', methods=['GET'])
 @cross_origin()
-def fix_query():
+def correct_query():
     text = request.args.get('text')
     dataset = request.args.get('dataset')
-    corrected_query = correct_query(text)
+    corrected_query = spell_check_query(text)
     return match_and_rank(corrected_query, dataset)
 
 

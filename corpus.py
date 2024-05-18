@@ -52,5 +52,13 @@ def get_corpus(dataset_name: str) -> dict[str, str]:
         mapped_docs = dict(docs_store.get_many(docs_ids))
 
         corpus = {doc_id: doc.text for doc_id, doc in mapped_docs.items()}
+    
+    elif dataset_name == "lifestyle-queries":
+        queries = ir_datasets.load("lotte/lifestyle/dev/forum")
+        corpus = dict(queries.queries_iter())
+    
+    else:
+        queries = ir_datasets.load("antique/train")
+        corpus = corpus = dict(queries.queries_iter())
 
     return corpus

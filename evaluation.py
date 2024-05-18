@@ -10,9 +10,9 @@ import ir_measures
 
 def __get_queries_corpus(dataset_name: str) -> Dict[str, str]:
     if dataset_name == "lifestyle":
-        queries_corpus = dict(ir_datasets.load("lotte/lifestyle/dev/forum").queries_iter()[:1000])
+        queries_corpus = dict(ir_datasets.load("lotte/lifestyle/dev/forum").queries_iter()[:500])
     else:
-        queries_corpus = dict(ir_datasets.load("antique/train").queries_iter()[:1000])
+        queries_corpus = dict(ir_datasets.load("antique/train").queries_iter()[:500])
     return queries_corpus
 
     
@@ -48,12 +48,12 @@ def evaluate(dataset_name: str):
     ground_truth = _get_ground_truth(dataset_name)
     search_results = _get_search_results(dataset_name)
 
-    evaluation_results = ir_measures.calc_aggregate([AP, RR, P@10, R@10], ground_truth, search_results)
+    evaluation_results = ir_measures.calc_aggregate([AP, RR, P@10, P@5, P@3, R@10], ground_truth, search_results)
     print(evaluation_results)
     
 
-evaluate("antique")
+# evaluate("antique")
 # {P@10: 0.21067600989282878, AP: 0.2058563369194092, RR: 0.5566740539973516, nDCG: 0.3817552297220335, nDCG@10: 0.2921212417779146}
 
 evaluate("lifestyle")
-# {RR: 0.6057441633105313, AP: 0.3300828686852424, R@10: 0.39232234750973144, P@10: 0.23159999999999906}
+# {AP: 0.3253047392967492, RR: 0.6238486333852895, R@10: 0.37612023520854804, P@10: 0.2559999999999995, P@3: 0.4246666666666667, P@5: 0.3575999999999997}

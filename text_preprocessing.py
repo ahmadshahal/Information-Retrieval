@@ -22,10 +22,10 @@ def get_preprocessed_text_terms(text: str) -> list:
     Returns:
         A list of cleansing tokens
     """
-    text = _remove_urls(text)
-    text = _remove_punctuations(text)
+    urls_removed = _remove_urls(text)
+    punctuations_removed = _remove_punctuations(urls_removed)
     # 1) Tokenizing: extract tokens from the text
-    tokens = _get_words_tokenize(text)
+    tokens = _get_words_tokenize(punctuations_removed)
     # 2) Lowerization: convert all tokens to lowercase
     lowercase_tokens = _lowercase_tokens(tokens)
     filtered_tokens = _remove_stop_words(lowercase_tokens)

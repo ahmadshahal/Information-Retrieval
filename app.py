@@ -7,21 +7,13 @@ from collections import OrderedDict
 from match_and_rank import match_and_rank
 from query_correction import spell_check_query
 
-# from search_query_processing import get_search_result
+from corpus import get_corpus
+
 from text_preprocessing import get_preprocessed_text_terms
 
 app = Flask(__name__)
 cors = CORS(app)
 app.json.sort_keys = False
-
-
-# @app.route('/search', methods=['GET'])
-# @cross_origin()
-# def search():
-#     query = request.args.get('query')
-#     dataset = request.args.get('dataset')
-#     retrieving_relevant_on = "terms"  # "terms" or "topics"
-#     return get_search_result(query, dataset, retrieving_relevant_on)
 
 
 @app.route('/process-text', methods=['GET'])
@@ -35,10 +27,13 @@ def get_processed_text():
 @app.route('/correct-query', methods=['GET'])
 @cross_origin()
 def correct_query():
-    text = request.args.get('text')
+    text = request.args.get('query')
     dataset = request.args.get('dataset')
     corrected_query = spell_check_query(text)
-    return match_and_rank(corrected_query, dataset)
+    queries = get_corpus(dataset)
+    quereis_ids = match_and_rank(corrected_query, dataset)
+    filtered = dict(filter(lambda item: item[0] in quereis_ids, queries.items()))
+    return filtered
 
 
 @app.route('/ranking', methods=['GET'])
@@ -46,7 +41,10 @@ def correct_query():
 def get_ranking():
     dataset = request.args.get('dataset')
     query = request.args.get('query')
-    return match_and_rank(query, dataset)
+    docs = get_corpus(dataset)
+    docs_ids = match_and_rank(query, dataset).keys()
+    filtered = dict(filter(lambda item: item[0] in docs_ids, docs.items()))
+    return filtered
 
 
 if __name__ == "__main__":

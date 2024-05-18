@@ -2,11 +2,12 @@ import nltk
 from spellchecker import SpellChecker
 from text_preprocessing import _get_words_tokenize
 from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords, words
 
 def spell_check_query(query: str) -> str:
     spell = SpellChecker()
 
-    tokens = word_tokenize(text)
+    tokens = word_tokenize(query)
 
     word_set = set(words.words())
 

@@ -13,7 +13,7 @@ def get_corpus(dataset_name: str) -> dict[str, str]:
         A dictionary mapping document IDs to document content.
     """
     if dataset_name == "lifestyle":
-        
+
         # TODO: 200,000 documents should be taken from the dataset
         random_corpus = dict(ir_datasets.load("lotte/lifestyle/dev").docs_iter()[:1000])
         random_corpus_ids = set(random_corpus.keys())
@@ -35,7 +35,7 @@ def get_corpus(dataset_name: str) -> dict[str, str]:
 
         corpus = {doc_id: doc.text for doc_id, doc in mapped_docs.items()}
 
-    else:  # dataset_name == "antique":
+    elif dataset_name == "antique":  # dataset_name == "antique":
 
         # TODO: 200,000 documents should be taken from the dataset
         random_corpus = dict(ir_datasets.load("antique/train").docs_iter()[:1000])

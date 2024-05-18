@@ -204,7 +204,6 @@ def _normalize_country_names(tokens: list) -> list:
     # Create a set of country names for faster lookup
     # ex. {'USA', 'KSA'}
     country_codes = set(country.alpha_3 for country in pycountry.countries)
-    
     # Loop over the tokens and update country names if they match a country name
     for token in tokens.copy():
         if token.upper() in country_codes:
@@ -234,4 +233,4 @@ def _lemmatize_tokens(tokens: list) -> list:
     lemmatized_tokens = [lemmatizer.lemmatize(token) for token in tokens]
     return lemmatized_tokens
 
-__all__ = ['get_preprocessed_text_terms']
+__all__ = ['get_preprocessed_text_terms', '_get_words_tokenize']

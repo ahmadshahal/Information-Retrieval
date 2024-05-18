@@ -23,10 +23,12 @@ def _build_save_vectorizer(dataset_name: str):
 
     vectorizer = TfidfVectorizer()
     tfidf_matrix = vectorizer.fit_transform(processed_corpus)
-    
+
     save_vectorizer(vectorizer, dataset_name)
     save_tfidf_matrix(tfidf_matrix, dataset_name)
 
 
 _build_save_vectorizer("lifestyle")
+_build_save_vectorizer("lifestyle-queries")
 _build_save_vectorizer("antique")
+_build_save_vectorizer("antique-queries")

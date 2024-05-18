@@ -4,8 +4,8 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS, cross_origin
 from collections import OrderedDict
 
-from match_and_rank import match_and_rank
-from query_correction import spell_check_query
+from match_and_rank import clustering_match_and_rank
+from query_correction import process_query
 
 from corpus import get_corpus
 
@@ -29,10 +29,12 @@ def get_processed_text():
 def correct_query():
     text = request.args.get('query')
     dataset = request.args.get('dataset')
-    corrected_query = spell_check_query(text)
+    processed_query = process_query(text)
     queries = get_corpus(dataset)
-    quereis_ids = match_and_rank(corrected_query, dataset)
-    filtered = dict(filter(lambda item: item[0] in quereis_ids, queries.items()))
+    quereis_ids = match_and_rank(processed_query, dataset)
+    filtered = {}
+    for id in quereis_ids:
+        filtered[id] = queries[id]
     return filtered
 
 
@@ -43,7 +45,21 @@ def get_ranking():
     query = request.args.get('query')
     docs = get_corpus(dataset)
     docs_ids = match_and_rank(query, dataset).keys()
-    filtered = dict(filter(lambda item: item[0] in docs_ids, docs.items()))
+    filtered = {}
+    for id in docs_ids:
+        filtered[id] = docs[id]
+    return filtered
+
+@app.route('/clustering', methods=['GET'])
+@cross_origin()
+def clustering():
+    dataset = request.args.get('dataset')
+    query = request.args.get('query')
+    docs = get_corpus(dataset)
+    docs_ids = clustering_match_and_rank(query, dataset).keys()
+    filtered = {}
+    for id in docs_ids:
+        filtered[id] = docs[id]
     return filtered
 
 

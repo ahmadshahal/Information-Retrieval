@@ -3,11 +3,30 @@ from spellchecker import SpellChecker
 from text_preprocessing import _get_words_tokenize
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords, words
+from nltk.corpus import wordnet
+from nltk.tokenize import word_tokenize
 
-def spell_check_query(query: str) -> str:
-    spell = SpellChecker()
 
+def process_query(query: str) -> str:
     tokens = word_tokenize(query)
+    spell_checked = _spell_check_query(tokens)
+    synonyms = _expand_query_synonyms(spell_checked)
+    spell_checked.extend(synonyms)
+    return ' '.join(spell_checked)
+
+
+def _expand_query_synonyms(tokens) -> list:
+    expanded_query = ' '.join(tokens)
+    for word in tokens:
+        synonyms = wordnet.synsets(word)
+        for syn in synonyms:
+            for lemma in syn.lemmas():
+                expanded_query += ' ' + lemma.name()
+    return list(set(expanded_query.split(' ')))
+
+
+def _spell_check_query(tokens: list) -> list:
+    spell = SpellChecker()
 
     word_set = set(words.words())
 
@@ -26,17 +45,4 @@ def spell_check_query(query: str) -> str:
             else:
                 corrected_tokens.append(token)
 
-    return ' '.join(corrected_tokens)
-
-
-# def spell_check_query(query: str) -> str:
-#     tokens = _get_words_tokenize(query)
-#     spell = SpellChecker()
-#     wrong_words = spell.unknown(tokens)
-#     for i,token in enumerate(tokens):
-#         if token in wrong_words:
-#             correct_word = spell.correction(token)
-#             if(correct_word != None):
-#                 tokens[i] = correct_word
-#     corrected_query = ' '.join(tokens)
-#     return corrected_query
+    return corrected_tokens

@@ -28,7 +28,7 @@ def _build_save_vectorizer(dataset_name: str):
     save_tfidf_matrix(tfidf_matrix, dataset_name)
 
 
-_build_save_vectorizer("lifestyle")
-_build_save_vectorizer("lifestyle-queries")
+# _build_save_vectorizer("lifestyle")
+# _build_save_vectorizer("lifestyle-queries")
 _build_save_vectorizer("antique")
-_build_save_vectorizer("antique-queries")
+# _build_save_vectorizer("antique-queries")

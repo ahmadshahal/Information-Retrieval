@@ -3,7 +3,7 @@ from typing import Dict
 import ir_datasets
 
 from ir_measures import *
-from match_and_rank import match_and_rank
+from match_and_rank import match_and_rank, clustering_match_and_rank
 
 import ir_measures
 
@@ -44,16 +44,27 @@ def _get_search_results(dataset_name: str):
     return search_results
 
 
+def _get_clustering_search_results(dataset_name: str):
+    search_results = {}
+    queries_corpus = __get_queries_corpus(dataset_name)
+    for query_id, query in queries_corpus.items():
+        results = clustering_match_and_rank(query, dataset_name)
+        relevance_documents = [(doc_id, score * 10) for doc_id, score in results.items()]
+        search_results[query_id] = dict(relevance_documents)
+    return search_results
+
+
 def evaluate(dataset_name: str):
     ground_truth = _get_ground_truth(dataset_name)
     search_results = _get_search_results(dataset_name)
+    # search_results = _get_clustering_search_results(dataset_name)
 
     evaluation_results = ir_measures.calc_aggregate([AP, RR, P@10, P@5, P@3, R@10], ground_truth, search_results)
     print(evaluation_results)
     
 
-# evaluate("antique")
+evaluate("antique")
 # {P@10: 0.21067600989282878, AP: 0.2058563369194092, RR: 0.5566740539973516, nDCG: 0.3817552297220335, nDCG@10: 0.2921212417779146}
 
-evaluate("lifestyle")
+# evaluate("lifestyle")
 # {AP: 0.3253047392967492, RR: 0.6238486333852895, R@10: 0.37612023520854804, P@10: 0.2559999999999995, P@3: 0.4246666666666667, P@5: 0.3575999999999997}

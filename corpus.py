@@ -1,6 +1,6 @@
 
 import ir_datasets
-
+from storage import get_crawled_dataset
 
 def get_corpus(dataset_name: str) -> dict[str, str]:
     """
@@ -15,7 +15,7 @@ def get_corpus(dataset_name: str) -> dict[str, str]:
     if dataset_name == "lifestyle":
 
         # TODO: 200,000 documents should be taken from the dataset
-        random_corpus = dict(ir_datasets.load("lotte/lifestyle/dev").docs_iter()[:1000])
+        random_corpus = dict(ir_datasets.load("lotte/lifestyle/dev").docs_iter()[:200])
         random_corpus_ids = set(random_corpus.keys())
 
         forum_qrels = list(ir_datasets.load("lotte/lifestyle/dev/forum").qrels_iter())
@@ -38,7 +38,7 @@ def get_corpus(dataset_name: str) -> dict[str, str]:
     elif dataset_name == "antique":  # dataset_name == "antique":
 
         # TODO: 200,000 documents should be taken from the dataset
-        random_corpus = dict(ir_datasets.load("antique/train").docs_iter()[:1000])
+        random_corpus = dict(ir_datasets.load("antique/train").docs_iter()[:200])
         random_corpus_ids = set(random_corpus.keys())
 
         qrels = list(ir_datasets.load("antique/train").qrels_iter())
@@ -52,6 +52,12 @@ def get_corpus(dataset_name: str) -> dict[str, str]:
         mapped_docs = dict(docs_store.get_many(docs_ids))
 
         corpus = {doc_id: doc.text for doc_id, doc in mapped_docs.items()}
+    
+    elif dataset_name == "lifestyle-crawled":
+        corpus = get_crawled_dataset("lifestyle")
+
+    elif dataset_name == "antique-crawled":
+        corpus = get_crawled_dataset("antique")
     
     elif dataset_name == "lifestyle-queries":
         queries = ir_datasets.load("lotte/lifestyle/dev/forum")

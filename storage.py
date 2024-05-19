@@ -32,3 +32,11 @@ def get_clusters(dataset_name: str):
     with open(f"/Users/ahmadsmac/ITE/IR/ir-search-engine-master/models/clusters_{dataset_name}.pkl", "rb") as f:
         return pickle.load(f)
 
+def save_crawled_dataset(dataset, dataset_name: str):
+    with open(f"/Users/ahmadsmac/ITE/IR/ir-search-engine-master/models/crawled_{dataset_name}.pkl", "wb") as f:
+        pickle.dump(dataset, f)
+        
+def get_crawled_dataset(dataset_name: str):
+    with open(f"/Users/ahmadsmac/ITE/IR/ir-search-engine-master/models/crawled_{dataset_name}.pkl", "rb") as f:
+        return pickle.load(f)
+

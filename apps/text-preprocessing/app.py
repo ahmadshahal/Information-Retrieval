@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, jsonify
 from flask_cors import CORS, cross_origin
 
 from text_preprocessing import get_preprocessed_text_terms
@@ -13,14 +13,7 @@ app.json.sort_keys = False
 def get_processed_text():
     text = request.args.get('text')
     dataset = request.args.get('dataset')
-    return get_preprocessed_text_terms(text, dataset)
-
-@app.route('/hi', methods=['GET'])
-@cross_origin()
-def hi():
-    text = request.args.get('text')
-    dataset = request.args.get('dataset')
-    return f"hello {text} from {dataset}"
+    return jsonify(get_preprocessed_text_terms(text, dataset))
 
 
 if __name__ == "__main__":

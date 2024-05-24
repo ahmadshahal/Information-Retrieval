@@ -1,10 +1,7 @@
-import pickle
 
-from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from collections import OrderedDict
 from query_correction import process_query
-
 from libs.storage import get_tfidf_matrix, get_vectorizer, get_means, get_clusters
 from libs.corpus import get_corpus
 import requests
@@ -12,8 +9,8 @@ from flask import jsonify
 
 
 def _process_query(query: str, dataset_name: str) -> str:
-    # processed_query = process_query(query)
-    response = requests.get(f'http://localhost/8000/process-text?dataset={dataset_name}&text={query}')
+    processed_query = process_query(query)
+    response = requests.get(f'http://localhost:8000/process-text?dataset={dataset_name}&text={processed_query}')
     response.raise_for_status()
     processed_text = jsonify(response.json())
     return ' '.join(processed_text)
@@ -28,7 +25,7 @@ def match_and_rank(query: str, dataset_name: str, similarity_threshold = 0.01):
     query_vector = loaded_vectorizer.transform([processed_query])
 
     similarity_scores = cosine_similarity(query_vector, loaded_tfidf_matrix)
-    
+
     corpus = get_corpus(dataset_name)
     doc_ids = corpus.keys()
 

@@ -1,6 +1,6 @@
 
 import ir_datasets
-from storage import get_crawled_dataset
+from libs.storage import get_crawled_dataset
 
 def get_corpus(dataset_name: str) -> dict[str, str]:
     """

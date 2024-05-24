@@ -1,18 +1,18 @@
 
-from corpus import get_corpus
+from libs.corpus import get_corpus
 import re
 import requests
 from http.client import RemoteDisconnected
 from urllib.error import HTTPError, URLError
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
-from storage import get_crawled_dataset, save_crawled_dataset
+from libs.storage import get_crawled_dataset, save_crawled_dataset
 from urllib.parse import urlparse
 import uuid
 
 def crawl_dataset(dataset_name: str):
     corpus = get_corpus(dataset_name)
-    
+
     new_docs = []
     for doc in corpus.values():
         new_docs.extend(_expand_document_with_crawled_data(doc))
@@ -95,19 +95,19 @@ def __crawl(url):
         return ''
 
 
-crawl_dataset("lifestyle")
+# crawl_dataset("lifestyle")
 
-corpus = get_corpus("lifestyle")
-print(len(corpus))
+# corpus = get_corpus("lifestyle")
+# print(len(corpus))
 
-crawled_corpus = get_crawled_dataset("lifestyle")
-print(len(crawled_corpus))
+# crawled_corpus = get_crawled_dataset("lifestyle")
+# print(len(crawled_corpus))
 
 
-crawl_dataset("antique")
+# crawl_dataset("antique")
 
-corpus = get_corpus("antique")
-print(len(corpus))
+# corpus = get_corpus("antique")
+# print(len(corpus))
 
-crawled_corpus = get_crawled_dataset("antique")
-print(len(crawled_corpus))
+# crawled_corpus = get_crawled_dataset("antique")
+# print(len(crawled_corpus))

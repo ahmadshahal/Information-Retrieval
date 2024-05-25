@@ -1,6 +1,5 @@
 import nltk
 from spellchecker import SpellChecker
-from text_preprocessing import _get_words_tokenize
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords, words
 from nltk.corpus import wordnet

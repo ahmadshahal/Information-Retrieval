@@ -104,10 +104,10 @@ crawled_corpus = get_crawled_dataset("lifestyle")
 print(len(crawled_corpus))
 
 
-crawl_dataset("antique")
+# crawl_dataset("antique")
 
-corpus = get_corpus("antique")
-print(len(corpus))
+# corpus = get_corpus("antique")
+# print(len(corpus))
 
-crawled_corpus = get_crawled_dataset("antique")
-print(len(crawled_corpus))
+# crawled_corpus = get_crawled_dataset("antique")
+# print(len(crawled_corpus))

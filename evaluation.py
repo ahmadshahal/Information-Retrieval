@@ -10,9 +10,9 @@ import ir_measures
 
 def __get_queries_corpus(dataset_name: str) -> Dict[str, str]:
     if dataset_name == "lifestyle":
-        queries_corpus = dict(ir_datasets.load("lotte/lifestyle/dev/forum").queries_iter()[:500])
+        queries_corpus = dict(ir_datasets.load("lotte/lifestyle/dev/forum").queries_iter())
     else:
-        queries_corpus = dict(ir_datasets.load("antique/train").queries_iter()[:500])
+        queries_corpus = dict(ir_datasets.load("antique/train").queries_iter()[:1000])
     return queries_corpus
 
     
@@ -38,6 +38,7 @@ def _get_search_results(dataset_name: str):
     search_results = {}
     queries_corpus = __get_queries_corpus(dataset_name)
     for query_id, query in queries_corpus.items():
+        print(f'Evaluating query {query_id}')
         results = match_and_rank(query, dataset_name)
         relevance_documents = [(doc_id, score * 10) for doc_id, score in results.items()]
         search_results[query_id] = dict(relevance_documents)
@@ -59,7 +60,10 @@ def evaluate(dataset_name: str):
     search_results = _get_search_results(dataset_name)
     # search_results = _get_clustering_search_results(dataset_name)
 
-    evaluation_results = ir_measures.calc_aggregate([AP, RR, P@10, P@5, P@3, R@10], ground_truth, search_results)
+    # for metric in ir_measures.iter_calc([AP@10, RR, P@10, P@5, P@3, R@10], ground_truth, search_results):
+        # print(metric)
+
+    evaluation_results = ir_measures.calc_aggregate([AP@10, RR, P@10, P@5, P@3, R@10], ground_truth, search_results)
     print(evaluation_results)
     
 

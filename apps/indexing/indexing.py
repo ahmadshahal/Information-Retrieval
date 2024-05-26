@@ -1,3 +1,8 @@
+from pathlib import Path
+import sys
+
+sys.path.append(str(Path(__file__).parents[2]))
+
 from libs.corpus import get_corpus
 from libs import storage
 import requests

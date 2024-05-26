@@ -29,6 +29,7 @@ def _build_save_vectorizer(dataset_name: str):
 
 
 # _build_save_vectorizer("lifestyle")
+_build_save_vectorizer("quora")
 # _build_save_vectorizer("lifestyle-queries")
-_build_save_vectorizer("antique")
+# _build_save_vectorizer("antique")
 # _build_save_vectorizer("antique-queries")

@@ -10,17 +10,22 @@ import ir_measures
 
 def __get_queries_corpus(dataset_name: str) -> Dict[str, str]:
     if dataset_name == "lifestyle":
-        queries_corpus = dict(ir_datasets.load("lotte/lifestyle/dev/forum").queries_iter())
+        queries_corpus = dict(ir_datasets.load("lotte/lifestyle/dev/search").queries_iter())
+    elif dataset_name == "quora":
+        queries_corpus = dict(list(ir_datasets.load("beir/quora/dev").queries_iter()))
     else:
-        queries_corpus = dict(ir_datasets.load("antique/train").queries_iter()[:1000])
+        queries_corpus = dict(ir_datasets.load("antique/train").queries_iter()[:100])
     return queries_corpus
 
     
 def __get_qrels_corpus(dataset_name: str):
     if dataset_name == "lifestyle":
-        qrels_corpus = list(ir_datasets.load("lotte/lifestyle/dev/forum").qrels_iter())
+        qrels_corpus = list(ir_datasets.load("lotte/lifestyle/dev/search").qrels_iter())
+    elif dataset_name == "quora":
+        queries_corpus = list(ir_datasets.load("beir/quora/dev").qrels_iter())
     else:
-        qrels_corpus = list(ir_datasets.load("antique/train").qrels_iter())
+        normal_qrels_corpus = list(ir_datasets.load("antique/train").qrels_iter())
+        qrels_corpus = [item for item in normal_qrels_corpus if item.relevance == 4 or item.relevance == 3]
     return qrels_corpus
 
 
@@ -40,7 +45,7 @@ def _get_search_results(dataset_name: str):
     for query_id, query in queries_corpus.items():
         print(f'Evaluating query {query_id}')
         results = match_and_rank(query, dataset_name)
-        relevance_documents = [(doc_id, score * 10) for doc_id, score in results.items()]
+        relevance_documents = [(doc_id, score) for doc_id, score in results.items()]
         search_results[query_id] = dict(relevance_documents)
     return search_results
 
@@ -50,7 +55,7 @@ def _get_clustering_search_results(dataset_name: str):
     queries_corpus = __get_queries_corpus(dataset_name)
     for query_id, query in queries_corpus.items():
         results = clustering_match_and_rank(query, dataset_name)
-        relevance_documents = [(doc_id, score * 10) for doc_id, score in results.items()]
+        relevance_documents = [(doc_id, score) for doc_id, score in results.items()]
         search_results[query_id] = dict(relevance_documents)
     return search_results
 
@@ -61,14 +66,17 @@ def evaluate(dataset_name: str):
     # search_results = _get_clustering_search_results(dataset_name)
 
     # for metric in ir_measures.iter_calc([AP@10, RR, P@10, P@5, P@3, R@10], ground_truth, search_results):
-        # print(metric)
+    #     print(metric)
 
-    evaluation_results = ir_measures.calc_aggregate([AP@10, RR, P@10, P@5, P@3, R@10], ground_truth, search_results)
+    evaluation_results = ir_measures.calc_aggregate([Success@5, AP@10, RR, P@10, P@5, P@3, R@10], ground_truth, search_results)
     print(evaluation_results)
     
 
-evaluate("antique")
+# evaluate("antique")
 # {P@10: 0.21067600989282878, AP: 0.2058563369194092, RR: 0.5566740539973516, nDCG: 0.3817552297220335, nDCG@10: 0.2921212417779146}
 
 # evaluate("lifestyle")
+# {AP: 0.3253047392967492, RR: 0.6238486333852895, R@10: 0.37612023520854804, P@10: 0.2559999999999995, P@3: 0.4246666666666667, P@5: 0.3575999999999997}
+
+evaluate("quora")
 # {AP: 0.3253047392967492, RR: 0.6238486333852895, R@10: 0.37612023520854804, P@10: 0.2559999999999995, P@3: 0.4246666666666667, P@5: 0.3575999999999997}

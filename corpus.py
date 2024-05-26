@@ -13,11 +13,16 @@ def get_corpus(dataset_name: str) -> dict[str, str]:
         A dictionary mapping document IDs to document content.
     """
     if dataset_name == "lifestyle":
-        corpus = dict(ir_datasets.load("lotte/lifestyle/dev/forum").docs_iter())
+        corpus = dict(ir_datasets.load("lotte/lifestyle/dev/search").docs_iter())
 
     elif dataset_name == "antique":
         corpus = dict(ir_datasets.load("antique/train").docs_iter())
-    
+        print(f'Loading antique dataset {len(corpus)}')
+        
+    elif dataset_name == "quora":
+        corpus = dict(ir_datasets.load("beir/quora/dev").docs_iter())
+        print(f'Loading qoura dataset {len(corpus)}')
+        
     elif dataset_name == "lifestyle-crawled":
         corpus = get_crawled_dataset("lifestyle")
 
@@ -25,7 +30,7 @@ def get_corpus(dataset_name: str) -> dict[str, str]:
         corpus = get_crawled_dataset("antique")
     
     elif dataset_name == "lifestyle-queries":
-        queries = ir_datasets.load("lotte/lifestyle/dev/forum")
+        queries = ir_datasets.load("lotte/lifestyle/dev/search")
         corpus = dict(queries.queries_iter())
     
     else:

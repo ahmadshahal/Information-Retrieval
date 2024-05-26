@@ -3,6 +3,7 @@ from datetime import datetime
 
 import string
 import pycountry
+from nltk import pos_tag
 from dateutil import parser
 from nltk.corpus import stopwords, words
 from nltk.stem import PorterStemmer
@@ -10,6 +11,98 @@ from nltk.stem import WordNetLemmatizer
 from nltk.tokenize import RegexpTokenizer
 from nltk.tokenize import word_tokenize
 from spellchecker import SpellChecker
+
+from textacy import preprocessing
+
+chat_words = {
+    "AFAIK": "As Far As I Know",
+    "AFK": "Away From Keyboard",
+    "ASAP": "As Soon As Possible",
+    "ATK": "At The Keyboard",
+    "ATM": "At The Moment",
+    "A3": "Anytime, Anywhere, Anyplace",
+    "BAK": "Back At Keyboard",
+    "BBL": "Be Back Later",
+    "BBS": "Be Back Soon",
+    "BFN": "Bye For Now",
+    "B4N": "Bye For Now",
+    "BRB": "Be Right Back",
+    "BRT": "Be Right There",
+    "BTW": "By The Way",
+    "B4": "Before",
+    "B4N": "Bye For Now",
+    "CU": "See You",
+    "CUL8R": "See You Later",
+    "CYA": "See You",
+    "FAQ": "Frequently Asked Questions",
+    "FC": "Fingers Crossed",
+    "FWIW": "For What It's Worth",
+    "FYI": "For Your Information",
+    "GAL": "Get A Life",
+    "GG": "Good Game",
+    "GN": "Good Night",
+    "GMTA": "Great Minds Think Alike",
+    "GR8": "Great!",
+    "G9": "Genius",
+    "IC": "I See",
+    "ICQ": "I Seek you (also a chat program)",
+    "ILU": "ILU: I Love You",
+    "IMHO": "In My Honest/Humble Opinion",
+    "IMO": "In My Opinion",
+    "IOW": "In Other Words",
+    "IRL": "In Real Life",
+    "KISS": "Keep It Simple, Stupid",
+    "LDR": "Long Distance Relationship",
+    "LMAO": "Laugh My A.. Off",
+    "LOL": "Laughing Out Loud",
+    "LTNS": "Long Time No See",
+    "L8R": "Later",
+    "MTE": "My Thoughts Exactly",
+    "M8": "Mate",
+    "NRN": "No Reply Necessary",
+    "OIC": "Oh I See",
+    "PITA": "Pain In The A..",
+    "PRT": "Party",
+    "PRW": "Parents Are Watching",
+    "QPSA?": "Que Pasa?",
+    "ROFL": "Rolling On The Floor Laughing",
+    "ROFLOL": "Rolling On The Floor Laughing Out Loud",
+    "ROTFLMAO": "Rolling On The Floor Laughing My A.. Off",
+    "SK8": "Skate",
+    "STATS": "Your sex and age",
+    "ASL": "Age, Sex, Location",
+    "THX": "Thank You",
+    "TTFN": "Ta-Ta For Now!",
+    "TTYL": "Talk To You Later",
+    "U": "You",
+    "U2": "You Too",
+    "U4E": "Yours For Ever",
+    "WB": "Welcome Back",
+    "WTF": "What The F...",
+    "WTG": "Way To Go!",
+    "WUF": "Where Are You From?",
+    "W8": "Wait...",
+    "7K": "Sick:-D Laugher",
+    "TFW": "That feeling when",
+    "MFW": "My face when",
+    "MRW": "My reaction when",
+    "IFYP": "I feel your pain",
+    "TNTL": "Trying not to laugh",
+    "JK": "Just kidding",
+    "IDC": "I don't care",
+    "ILY": "I love you",
+    "IMU": "I miss you",
+    "ADIH": "Another day in hell",
+    "ZZZ": "Sleeping, bored, tired",
+    "WYWH": "Wish you were here",
+    "TIME": "Tears in my eyes",
+    "BAE": "Before anyone else",
+    "FIMH": "Forever in my heart",
+    "BSAAW": "Big smile and a wink",
+    "BWL": "Bursting with laughter",
+    "BFF": "Best friends forever",
+    "CSL": "Can't stop laughing"
+}
 
 def get_preprocessed_text_terms(text: str) -> list:
     """
@@ -22,10 +115,19 @@ def get_preprocessed_text_terms(text: str) -> list:
     Returns:
         A list of cleansing tokens
     """
-    urls_removed = _remove_urls(text)
-    punctuations_removed = _remove_punctuations(urls_removed)
+    text = preprocessing.remove.punctuation(text)
+    text = preprocessing.remove.html_tags(text)
+    text = preprocessing.remove.brackets(text)
+    text = preprocessing.remove.accents(text)
+    text = preprocessing.replace.emojis(text)
+    text = preprocessing.replace.urls(text)
+    text = preprocessing.normalize.quotation_marks(text)
+    text = preprocessing.normalize.hyphenated_words(text)
+    text = preprocessing.normalize.whitespace(text)
+    text = preprocessing.normalize.unicode(text)
+    text = _chat_conversion(text)
     # 1) Tokenizing: extract tokens from the text
-    tokens = _get_words_tokenize(punctuations_removed)
+    tokens = _get_words_tokenize(text)
     # 2) Lowerization: convert all tokens to lowercase
     lowercase_tokens = _lowercase_tokens(tokens)
     filtered_tokens = _remove_stop_words(lowercase_tokens)
@@ -42,20 +144,14 @@ def _get_words_tokenize(text: str) -> list:
     return word_tokenize(text)
 
 
-def _remove_urls(text: str) -> str:
-    return re.sub("http[^\s]*", "", text, flags=re.IGNORECASE)
-
-
 def _lowercase_tokens(tokens: list) -> list:
     return [token.lower() for token in tokens]
 
 
-def _remove_punctuations(text: str) -> str:
-    return text.translate(str.maketrans("", "", string.punctuation))
-
-
 def _remove_stop_words(tokens: list) -> list:
-    stop_words = set(stopwords.words('english'))
+    question_words = {'what', 'who', 'whom', 'whose', 'which', 'when', 'where', 'why', 'how', 'how much', 'how many',
+                    'how long', 'how often', 'how far', 'how old', 'how come'}
+    stop_words = set(stopwords.words('english')) - question_words
     filtered_tokens = [token for token in tokens if token not in stop_words]
 
     return filtered_tokens
@@ -105,9 +201,36 @@ def _normalize_country_names(tokens: list) -> list:
     return tokens
 
 
+def _get_wordnet_pos(treebank_tag):
+    """
+    Convert the Penn Treebank POS tags to WordNet POS tags.
+    """
+    if treebank_tag.startswith('J'):
+        return 'a'  # Adjective
+    elif treebank_tag.startswith('V'):
+        return 'v'  # Verb
+    elif treebank_tag.startswith('N'):
+        return 'n'  # Noun
+    elif treebank_tag.startswith('R'):
+        return 'r'  # Adverb
+    else:
+        return 'n'  # Use 'n' (noun) as default if no match is found
+
+
 def _lemmatize_tokens(tokens: list) -> list:
     lemmatizer = WordNetLemmatizer()
-    lemmatized_tokens = [lemmatizer.lemmatize(token) for token in tokens]
+    tagged_tokens = pos_tag(tokens)
+    lemmatized_tokens = [lemmatizer.lemmatize(token, pos=_get_wordnet_pos(pos_tag)) for token, pos_tag in tagged_tokens ]
     return lemmatized_tokens
+
+
+def _chat_conversion(text):
+    new_text = []
+    for i in text.split():
+        if i.upper() in chat_words:
+            new_text.append(chat_words[i.upper()])
+        else:
+            new_text.append(i)
+    return " ".join(new_text)
 
 __all__ = ['get_preprocessed_text_terms', '_get_words_tokenize']

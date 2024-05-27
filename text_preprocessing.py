@@ -14,126 +14,29 @@ from spellchecker import SpellChecker
 
 from textacy import preprocessing
 
-chat_words = {
-    "AFAIK": "As Far As I Know",
-    "AFK": "Away From Keyboard",
-    "ASAP": "As Soon As Possible",
-    "ATK": "At The Keyboard",
-    "ATM": "At The Moment",
-    "A3": "Anytime, Anywhere, Anyplace",
-    "BAK": "Back At Keyboard",
-    "BBL": "Be Back Later",
-    "BBS": "Be Back Soon",
-    "BFN": "Bye For Now",
-    "B4N": "Bye For Now",
-    "BRB": "Be Right Back",
-    "BRT": "Be Right There",
-    "BTW": "By The Way",
-    "B4": "Before",
-    "B4N": "Bye For Now",
-    "CU": "See You",
-    "CUL8R": "See You Later",
-    "CYA": "See You",
-    "FAQ": "Frequently Asked Questions",
-    "FC": "Fingers Crossed",
-    "FWIW": "For What It's Worth",
-    "FYI": "For Your Information",
-    "GAL": "Get A Life",
-    "GG": "Good Game",
-    "GN": "Good Night",
-    "GMTA": "Great Minds Think Alike",
-    "GR8": "Great!",
-    "G9": "Genius",
-    "IC": "I See",
-    "ICQ": "I Seek you (also a chat program)",
-    "ILU": "ILU: I Love You",
-    "IMHO": "In My Honest/Humble Opinion",
-    "IMO": "In My Opinion",
-    "IOW": "In Other Words",
-    "IRL": "In Real Life",
-    "KISS": "Keep It Simple, Stupid",
-    "LDR": "Long Distance Relationship",
-    "LMAO": "Laugh My A.. Off",
-    "LOL": "Laughing Out Loud",
-    "LTNS": "Long Time No See",
-    "L8R": "Later",
-    "MTE": "My Thoughts Exactly",
-    "M8": "Mate",
-    "NRN": "No Reply Necessary",
-    "OIC": "Oh I See",
-    "PITA": "Pain In The A..",
-    "PRT": "Party",
-    "PRW": "Parents Are Watching",
-    "QPSA?": "Que Pasa?",
-    "ROFL": "Rolling On The Floor Laughing",
-    "ROFLOL": "Rolling On The Floor Laughing Out Loud",
-    "ROTFLMAO": "Rolling On The Floor Laughing My A.. Off",
-    "SK8": "Skate",
-    "STATS": "Your sex and age",
-    "ASL": "Age, Sex, Location",
-    "THX": "Thank You",
-    "TTFN": "Ta-Ta For Now!",
-    "TTYL": "Talk To You Later",
-    "U": "You",
-    "U2": "You Too",
-    "U4E": "Yours For Ever",
-    "WB": "Welcome Back",
-    "WTF": "What The F...",
-    "WTG": "Way To Go!",
-    "WUF": "Where Are You From?",
-    "W8": "Wait...",
-    "7K": "Sick:-D Laugher",
-    "TFW": "That feeling when",
-    "MFW": "My face when",
-    "MRW": "My reaction when",
-    "IFYP": "I feel your pain",
-    "TNTL": "Trying not to laugh",
-    "JK": "Just kidding",
-    "IDC": "I don't care",
-    "ILY": "I love you",
-    "IMU": "I miss you",
-    "ADIH": "Another day in hell",
-    "ZZZ": "Sleeping, bored, tired",
-    "WYWH": "Wish you were here",
-    "TIME": "Tears in my eyes",
-    "BAE": "Before anyone else",
-    "FIMH": "Forever in my heart",
-    "BSAAW": "Big smile and a wink",
-    "BWL": "Bursting with laughter",
-    "BFF": "Best friends forever",
-    "CSL": "Can't stop laughing"
-}
 
 def get_preprocessed_text_terms(text: str) -> list:
-    """
-    Apply text processing steps of a given text
-
-    Args:
-        text: The text you want to process
-        dataset_name: The name of the dataset to use. Can be either "lifestyle" or "antique".
-
-    Returns:
-        A list of cleansing tokens
-    """
-    text = preprocessing.remove.punctuation(text)
     text = preprocessing.remove.html_tags(text)
+    text = preprocessing.remove.punctuation(text)
     text = preprocessing.remove.brackets(text)
-    text = preprocessing.remove.accents(text)
-    text = preprocessing.replace.emojis(text)
-    text = preprocessing.replace.urls(text)
+
+    text = preprocessing.normalize.unicode(text)
     text = preprocessing.normalize.quotation_marks(text)
     text = preprocessing.normalize.hyphenated_words(text)
     text = preprocessing.normalize.whitespace(text)
-    text = preprocessing.normalize.unicode(text)
+
+    text = preprocessing.replace.emojis(text)
+    text = preprocessing.replace.urls(text)
+    text = preprocessing.remove.accents(text)
     text = _chat_conversion(text)
-    # 1) Tokenizing: extract tokens from the text
+
     tokens = _get_words_tokenize(text)
-    # 2) Lowerization: convert all tokens to lowercase
     lowercase_tokens = _lowercase_tokens(tokens)
+
     filtered_tokens = _remove_stop_words(lowercase_tokens)
     d = _normalize_dates(filtered_tokens)
     c = _normalize_country_names(d)
-    # 5) Stemming: stemming the tokens
+
     stemmed_tokens = _stem_tokens(c)
     lemmitized_tokens = _lemmatize_tokens(stemmed_tokens)
 
@@ -234,3 +137,94 @@ def _chat_conversion(text):
     return " ".join(new_text)
 
 __all__ = ['get_preprocessed_text_terms', '_get_words_tokenize']
+
+
+chat_words = {
+    "AFAIK": "As Far As I Know",
+    "AFK": "Away From Keyboard",
+    "ASAP": "As Soon As Possible",
+    "ATK": "At The Keyboard",
+    "ATM": "At The Moment",
+    "A3": "Anytime, Anywhere, Anyplace",
+    "BAK": "Back At Keyboard",
+    "BBL": "Be Back Later",
+    "BBS": "Be Back Soon",
+    "BFN": "Bye For Now",
+    "B4N": "Bye For Now",
+    "BRB": "Be Right Back",
+    "BRT": "Be Right There",
+    "BTW": "By The Way",
+    "B4": "Before",
+    "B4N": "Bye For Now",
+    "CU": "See You",
+    "CUL8R": "See You Later",
+    "CYA": "See You",
+    "FAQ": "Frequently Asked Questions",
+    "FC": "Fingers Crossed",
+    "FWIW": "For What It's Worth",
+    "FYI": "For Your Information",
+    "GAL": "Get A Life",
+    "GG": "Good Game",
+    "GN": "Good Night",
+    "GMTA": "Great Minds Think Alike",
+    "GR8": "Great!",
+    "G9": "Genius",
+    "IC": "I See",
+    "ICQ": "I Seek you (also a chat program)",
+    "ILU": "ILU: I Love You",
+    "IMHO": "In My Honest/Humble Opinion",
+    "IMO": "In My Opinion",
+    "IOW": "In Other Words",
+    "IRL": "In Real Life",
+    "KISS": "Keep It Simple, Stupid",
+    "LDR": "Long Distance Relationship",
+    "LMAO": "Laugh My A.. Off",
+    "LOL": "Laughing Out Loud",
+    "LTNS": "Long Time No See",
+    "L8R": "Later",
+    "MTE": "My Thoughts Exactly",
+    "M8": "Mate",
+    "NRN": "No Reply Necessary",
+    "OIC": "Oh I See",
+    "PITA": "Pain In The A..",
+    "PRT": "Party",
+    "PRW": "Parents Are Watching",
+    "QPSA?": "Que Pasa?",
+    "ROFL": "Rolling On The Floor Laughing",
+    "ROFLOL": "Rolling On The Floor Laughing Out Loud",
+    "ROTFLMAO": "Rolling On The Floor Laughing My A.. Off",
+    "SK8": "Skate",
+    "STATS": "Your sex and age",
+    "ASL": "Age, Sex, Location",
+    "THX": "Thank You",
+    "TTFN": "Ta-Ta For Now!",
+    "TTYL": "Talk To You Later",
+    "U": "You",
+    "U2": "You Too",
+    "U4E": "Yours For Ever",
+    "WB": "Welcome Back",
+    "WTF": "What The F...",
+    "WTG": "Way To Go!",
+    "WUF": "Where Are You From?",
+    "W8": "Wait...",
+    "7K": "Sick:-D Laugher",
+    "TFW": "That feeling when",
+    "MFW": "My face when",
+    "MRW": "My reaction when",
+    "IFYP": "I feel your pain",
+    "TNTL": "Trying not to laugh",
+    "JK": "Just kidding",
+    "IDC": "I don't care",
+    "ILY": "I love you",
+    "IMU": "I miss you",
+    "ADIH": "Another day in hell",
+    "ZZZ": "Sleeping, bored, tired",
+    "WYWH": "Wish you were here",
+    "TIME": "Tears in my eyes",
+    "BAE": "Before anyone else",
+    "FIMH": "Forever in my heart",
+    "BSAAW": "Big smile and a wink",
+    "BWL": "Bursting with laughter",
+    "BFF": "Best friends forever",
+    "CSL": "Can't stop laughing"
+}

@@ -11,7 +11,6 @@ from corpus import get_corpus
 from text_preprocessing import get_preprocessed_text_terms
 
 def _process_query(query: str) -> str:
-    # processed_query = process_query(query)
     processed_text = get_preprocessed_text_terms(query)
     return ' '.join(processed_text)
 

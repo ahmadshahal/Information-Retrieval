@@ -22,7 +22,7 @@ def __get_qrels_corpus(dataset_name: str):
     if dataset_name == "lifestyle":
         qrels_corpus = list(ir_datasets.load("lotte/lifestyle/dev/search").qrels_iter())
     elif dataset_name == "quora":
-        queries_corpus = list(ir_datasets.load("beir/quora/dev").qrels_iter())
+        qrels_corpus = list(ir_datasets.load("beir/quora/dev").qrels_iter())
     else:
         normal_qrels_corpus = list(ir_datasets.load("antique/train").qrels_iter())
         qrels_corpus = [item for item in normal_qrels_corpus if item.relevance == 4 or item.relevance == 3]
@@ -65,18 +65,15 @@ def evaluate(dataset_name: str):
     search_results = _get_search_results(dataset_name)
     # search_results = _get_clustering_search_results(dataset_name)
 
-    # for metric in ir_measures.iter_calc([AP@10, RR, P@10, P@5, P@3, R@10], ground_truth, search_results):
-    #     print(metric)
-
     evaluation_results = ir_measures.calc_aggregate([Success@5, AP@10, RR, P@10, P@5, P@3, R@10], ground_truth, search_results)
     print(evaluation_results)
     
 
 # evaluate("antique")
-# {P@10: 0.21067600989282878, AP: 0.2058563369194092, RR: 0.5566740539973516, nDCG: 0.3817552297220335, nDCG@10: 0.2921212417779146}
+# {AP@10: 0.06245241522391001, RR: 0.22488798371864888, P@3: 0.11266831547128352, R@10: 0.10870739563803325, P@5: 0.09348722176422052, P@10: 0.06739488870568767, Success@5: 0.302555647155812}
 
 # evaluate("lifestyle")
-# {AP: 0.3253047392967492, RR: 0.6238486333852895, R@10: 0.37612023520854804, P@10: 0.2559999999999995, P@3: 0.4246666666666667, P@5: 0.3575999999999997}
+# {P@5: 0.09784172661870513, P@10: 0.07122302158273397, R@10: 0.26352787234082187, AP@10: 0.14300133837503948, RR: 0.24605632357895402, P@3: 0.10871302957633903, Success@5: 0.35731414868105515}
 
 evaluate("quora")
-# {AP: 0.3253047392967492, RR: 0.6238486333852895, R@10: 0.37612023520854804, P@10: 0.2559999999999995, P@3: 0.4246666666666667, P@5: 0.3575999999999997}
+# {RR: 0.7520686055096847, Success@5: 0.89, P@5: 0.26800000000000035, P@3: 0.35833333333333356, P@10: 0.16150000000000034, R@10: 0.8194242895992895, AP@10: 0.6631131653003081}

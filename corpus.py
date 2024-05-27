@@ -3,17 +3,9 @@ import ir_datasets
 from storage import get_crawled_dataset
 
 def get_corpus(dataset_name: str) -> dict[str, str]:
-    """
-    Get a corpus of documents for a given dataset name.
-
-    Args:
-        dataset_name: The name of the dataset to use. Can be either "lifestyle" or "antique".
-
-    Returns:
-        A dictionary mapping document IDs to document content.
-    """
     if dataset_name == "lifestyle":
         corpus = dict(ir_datasets.load("lotte/lifestyle/dev/search").docs_iter())
+        print(f'Loading lifestyle dataset {len(corpus)}')
 
     elif dataset_name == "antique":
         corpus = dict(ir_datasets.load("antique/train").docs_iter())
@@ -21,7 +13,7 @@ def get_corpus(dataset_name: str) -> dict[str, str]:
         
     elif dataset_name == "quora":
         corpus = dict(ir_datasets.load("beir/quora/dev").docs_iter())
-        print(f'Loading qoura dataset {len(corpus)}')
+        print(f'Loading quora dataset {len(corpus)}')
         
     elif dataset_name == "lifestyle-crawled":
         corpus = get_crawled_dataset("lifestyle")

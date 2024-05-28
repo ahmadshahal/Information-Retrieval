@@ -10,13 +10,13 @@ from corpus import get_corpus
 
 from text_preprocessing import get_preprocessed_text_terms
 
-def _process_query(query: str) -> str:
-    processed_text = get_preprocessed_text_terms(query)
+def _process_query(query: str, dataset_name: str) -> str:
+    processed_text = get_preprocessed_text_terms(query, dataset_name)
     return ' '.join(processed_text)
 
 
-def match_and_rank(query: str, dataset_name: str, similarity_threshold = 0.01):
-    processed_query = _process_query(query)
+def match_and_rank(query: str, dataset_name: str, similarity_threshold = 0.0001):
+    processed_query = _process_query(query, dataset_name)
 
     loaded_vectorizer = get_vectorizer(dataset_name)
     loaded_tfidf_matrix = get_tfidf_matrix(dataset_name)

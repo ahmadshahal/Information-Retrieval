@@ -15,30 +15,81 @@ from spellchecker import SpellChecker
 from textacy import preprocessing
 
 
-def get_preprocessed_text_terms(text: str) -> list:
-    text = preprocessing.remove.html_tags(text)
-    text = preprocessing.remove.punctuation(text)
-    text = preprocessing.remove.brackets(text)
+def get_preprocessed_text_terms(text: str, dataset_name: str) -> list:
+    if(dataset_name == "antique"):
+        text = preprocessing.remove.html_tags(text)
+        text = preprocessing.remove.punctuation(text)
+        text = preprocessing.remove.brackets(text)
 
-    text = preprocessing.normalize.unicode(text)
-    text = preprocessing.normalize.quotation_marks(text)
-    text = preprocessing.normalize.hyphenated_words(text)
-    text = preprocessing.normalize.whitespace(text)
+        text = preprocessing.normalize.unicode(text)
+        text = preprocessing.normalize.quotation_marks(text)
+        text = preprocessing.normalize.hyphenated_words(text)
+        text = preprocessing.normalize.whitespace(text)
 
-    text = preprocessing.replace.emojis(text)
-    text = preprocessing.replace.urls(text)
-    text = preprocessing.remove.accents(text)
-    text = _chat_conversion(text)
+        text = preprocessing.replace.emojis(text)
+        text = preprocessing.replace.urls(text)
+        # text = preprocessing.remove.accents(text)
+        # text = _chat_conversion(text)
 
-    tokens = _get_words_tokenize(text)
-    lowercase_tokens = _lowercase_tokens(tokens)
+        tokens = _get_words_tokenize(text)
+        lowercase_tokens = _lowercase_tokens(tokens)
 
-    filtered_tokens = _remove_stop_words(lowercase_tokens)
-    d = _normalize_dates(filtered_tokens)
-    c = _normalize_country_names(d)
+        filtered_tokens = _remove_stop_words(lowercase_tokens)
+        # d = _normalize_dates(filtered_tokens)
+        c = _normalize_country_names(filtered_tokens)
 
-    stemmed_tokens = _stem_tokens(c)
-    lemmitized_tokens = _lemmatize_tokens(stemmed_tokens)
+        stemmed_tokens = _stem_tokens(c)
+        lemmitized_tokens = _lemmatize_tokens(stemmed_tokens)
+
+    elif dataset_name == "lifestyle":
+        text = preprocessing.remove.html_tags(text)
+        text = preprocessing.remove.punctuation(text)
+        text = preprocessing.remove.brackets(text)
+
+        text = preprocessing.normalize.unicode(text)
+        text = preprocessing.normalize.quotation_marks(text)
+        text = preprocessing.normalize.hyphenated_words(text)
+        text = preprocessing.normalize.whitespace(text)
+
+        text = preprocessing.replace.emojis(text)
+        text = preprocessing.replace.urls(text)
+        text = preprocessing.remove.accents(text)
+        # text = _chat_conversion(text)
+
+        tokens = _get_words_tokenize(text)
+        lowercase_tokens = _lowercase_tokens(tokens)
+
+        filtered_tokens = _remove_stop_words(lowercase_tokens)
+        # d = _normalize_dates(filtered_tokens)
+        # c = _normalize_country_names(filtered_tokens)
+
+        stemmed_tokens = _stem_tokens(filtered_tokens)
+        lemmitized_tokens = _lemmatize_tokens(stemmed_tokens)
+
+    elif dataset_name == "quora":
+        text = preprocessing.remove.html_tags(text)
+        text = preprocessing.remove.punctuation(text)
+        text = preprocessing.remove.brackets(text)
+
+        text = preprocessing.normalize.unicode(text)
+        text = preprocessing.normalize.quotation_marks(text)
+        text = preprocessing.normalize.hyphenated_words(text)
+        text = preprocessing.normalize.whitespace(text)
+
+        text = preprocessing.replace.emojis(text)
+        text = preprocessing.replace.urls(text)
+        # text = preprocessing.remove.accents(text)
+        # text = _chat_conversion(text)
+
+        tokens = _get_words_tokenize(text)
+        lowercase_tokens = _lowercase_tokens(tokens)
+
+        filtered_tokens = _remove_stop_words(lowercase_tokens)
+        # d = _normalize_dates(filtered_tokens)
+        c = _normalize_country_names(filtered_tokens)
+
+        stemmed_tokens = _stem_tokens(c)
+        lemmitized_tokens = _lemmatize_tokens(stemmed_tokens)
 
     return lemmitized_tokens
 
@@ -52,9 +103,10 @@ def _lowercase_tokens(tokens: list) -> list:
 
 
 def _remove_stop_words(tokens: list) -> list:
-    question_words = {'what', 'who', 'whom', 'whose', 'which', 'when', 'where', 'why', 'how', 'how much', 'how many',
-                    'how long', 'how often', 'how far', 'how old', 'how come'}
-    stop_words = set(stopwords.words('english')) - question_words
+    # question_words = {'what', 'who', 'whom', 'whose', 'which', 'when', 'where', 'why', 'how', 'how much', 'how many',
+    #                 'how long', 'how often', 'how far', 'how old', 'how come'}
+    # stop_words = set(stopwords.words('english')) - question_words
+    stop_words = set(stopwords.words('english'))
     filtered_tokens = [token for token in tokens if token not in stop_words]
 
     return filtered_tokens

@@ -14,7 +14,7 @@ def __get_queries_corpus(dataset_name: str) -> Dict[str, str]:
     elif dataset_name == "quora":
         queries_corpus = dict(list(ir_datasets.load("beir/quora/dev").queries_iter()))
     else:
-        queries_corpus = dict(ir_datasets.load("antique/train").queries_iter()[:100])
+        queries_corpus = dict(ir_datasets.load("antique/test").queries_iter())
     return queries_corpus
 
     
@@ -24,8 +24,7 @@ def __get_qrels_corpus(dataset_name: str):
     elif dataset_name == "quora":
         qrels_corpus = list(ir_datasets.load("beir/quora/dev").qrels_iter())
     else:
-        normal_qrels_corpus = list(ir_datasets.load("antique/train").qrels_iter())
-        qrels_corpus = [item for item in normal_qrels_corpus if item.relevance == 4 or item.relevance == 3]
+        qrels_corpus = list(ir_datasets.load("antique/test").qrels_iter())
     return qrels_corpus
 
 
@@ -65,15 +64,15 @@ def evaluate(dataset_name: str):
     search_results = _get_search_results(dataset_name)
     # search_results = _get_clustering_search_results(dataset_name)
 
-    evaluation_results = ir_measures.calc_aggregate([Success@5, AP@10, RR, P@10, P@5, P@3, R@10], ground_truth, search_results)
+    evaluation_results = ir_measures.calc_aggregate([AP@10, AP, RR, P@10, R@5, R@10], ground_truth, search_results)
     print(evaluation_results)
     
 
 # evaluate("antique")
-# {AP@10: 0.06245241522391001, RR: 0.22488798371864888, P@3: 0.11266831547128352, R@10: 0.10870739563803325, P@5: 0.09348722176422052, P@10: 0.06739488870568767, Success@5: 0.302555647155812}
+# {RR: 0.7677160258293952, R@5: 0.082357640324396, AP: 0.2327276313698704, AP@10: 0.1081760933984333, P@10: 0.4035, R@10: 0.13560506468405845}
 
 # evaluate("lifestyle")
-# {P@5: 0.09784172661870513, P@10: 0.07122302158273397, R@10: 0.26352787234082187, AP@10: 0.14300133837503948, RR: 0.24605632357895402, P@3: 0.10871302957633903, Success@5: 0.35731414868105515}
+# {R@5: 0.23039524424416508, AP: 0.19285465840698576, P@10: 0.07985611510791388, R@10: 0.2868326584153922, AP@10: 0.17339461801684886, RR: 0.31360187349523133}
 
 evaluate("quora")
-# {RR: 0.7520686055096847, Success@5: 0.89, P@5: 0.26800000000000035, P@3: 0.35833333333333356, P@10: 0.16150000000000034, R@10: 0.8194242895992895, AP@10: 0.6631131653003081}
+# {P@5: 0.2030800000000148, R@10: 0.8474052904415849, AP@10: 0.6943854334314166, P@3: 0.3047999999999872, P@10: 0.11340000000000916, Success@10: 0.8908, RR: 0.7378057802071185}

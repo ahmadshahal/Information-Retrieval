@@ -3,6 +3,7 @@ from flask_cors import CORS, cross_origin
 
 from indexing import build_save_vectorizer
 from crawling import crawl_dataset
+from waitress import serve
 
 app = Flask(__name__)
 cors = CORS(app)
@@ -25,4 +26,4 @@ def build_vectorizer():
 
 
 if __name__ == "__main__":
-    app.run(port=8001, debug=True)
+    serve(app, host="localhost", port=8001)

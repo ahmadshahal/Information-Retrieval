@@ -16,6 +16,7 @@ def _process_corpus(corpus: dict[str, str], dataset_name: str) -> list:
         response = requests.get(f'http://localhost/8000/process-text?dataset={dataset_name}&text={doc_value}')
         response.raise_for_status()
         processed_doc_terms = jsonify(response.json())
+
         joined = ' '.join(processed_doc_terms)
         processed_docs.append(joined)
     return processed_docs
@@ -32,7 +33,7 @@ def build_save_vectorizer(dataset_name: str):
     storage.save_tfidf_matrix(tfidf_matrix, dataset_name)
 
 
-build_save_vectorizer("lifestyle")
+# build_save_vectorizer("lifestyle")
 # _build_save_vectorizer("lifestyle-queries")
 # _build_save_vectorizer("antique")
 # _build_save_vectorizer("antique-queries")

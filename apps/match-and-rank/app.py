@@ -5,6 +5,8 @@ sys.path.append(str(Path(__file__).parents[2]))
 
 from flask import Flask, request, jsonify
 from flask_cors import CORS, cross_origin
+from waitress import serve
+
 
 from match_and_rank import match_and_rank
 from query_correction import process_query
@@ -21,11 +23,14 @@ def correct_query():
     dataset = request.args.get('dataset')
     processed_query = process_query(text)
     queries = corpus.get_corpus(dataset)
-    quereis_ids = match_and_rank(processed_query, dataset)
-    filtered = {}
-    for id in quereis_ids:
-        filtered[id] = queries[id]
-    return filtered
+    queries_ids = match_and_rank(processed_query, dataset)
+    items = [{"id": query_id, "text": queries[query_id]} for query_id in queries_ids]
+    return {
+        "status": "success",
+        "code": 200,
+        "data": items
+    }
+
 
 
 @app.route('/ranking', methods=['GET'])
@@ -34,12 +39,14 @@ def get_ranking():
     dataset = request.args.get('dataset')
     query = request.args.get('query')
     docs = corpus.get_corpus(dataset)
-    docs_ids = match_and_rank(query, dataset).keys()
-    filtered = {}
-    for id in docs_ids:
-        filtered[id] = docs[id]
-    return filtered
-
+    results = match_and_rank(query, dataset)
+    docs_ids = results.keys()
+    items = [{"id": doc_id, "text": docs[doc_id], "value": results[doc_id]} for doc_id in docs_ids]
+    return {
+        "status": "success",
+        "code": 200,
+        "data": items
+    }
 
 if __name__ == "__main__":
-    app.run(port=8002, debug=True)
+    serve(app, host="localhost", port=8002)

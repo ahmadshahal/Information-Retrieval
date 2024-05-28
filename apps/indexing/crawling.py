@@ -95,13 +95,13 @@ def __crawl(url):
         return ''
 
 
-# crawl_dataset("lifestyle")
+crawl_dataset("lifestyle")
 
-# corpus = get_corpus("lifestyle")
-# print(len(corpus))
+corpus = get_corpus("lifestyle")
+print(len(corpus))
 
-# crawled_corpus = get_crawled_dataset("lifestyle")
-# print(len(crawled_corpus))
+crawled_corpus = get_crawled_dataset("lifestyle")
+print(len(crawled_corpus))
 
 
 # crawl_dataset("antique")

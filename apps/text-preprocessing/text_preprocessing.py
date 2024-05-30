@@ -16,7 +16,7 @@ from textacy import preprocessing
 
 
 def get_preprocessed_text_terms(text: str, dataset_name: str) -> list:
-    if(dataset_name == "antique"):
+    if(dataset_name == "antique" or dataset_name == "antique-queries"):
         text = preprocessing.remove.html_tags(text)
         text = preprocessing.remove.punctuation(text)
         text = preprocessing.remove.brackets(text)
@@ -41,7 +41,7 @@ def get_preprocessed_text_terms(text: str, dataset_name: str) -> list:
         stemmed_tokens = _stem_tokens(c)
         lemmitized_tokens = _lemmatize_tokens(stemmed_tokens)
 
-    elif dataset_name == "lifestyle":
+    elif dataset_name == "lifestyle" or dataset_name == "lifestyle-queries":
         text = preprocessing.remove.html_tags(text)
         text = preprocessing.remove.punctuation(text)
         text = preprocessing.remove.brackets(text)

@@ -1,5 +1,6 @@
 from pathlib import Path
 import sys
+from time import sleep
 
 sys.path.append(str(Path(__file__).parents[2]))
 
@@ -34,8 +35,9 @@ def build_save_vectorizer(dataset_name: str):
 
 
 # build_save_vectorizer("lifestyle")
-# _build_save_vectorizer("lifestyle-queries")
-build_save_vectorizer("antique")
-# _build_save_vectorizer("antique-queries")
+build_save_vectorizer("lifestyle-queries")
+# build_save_vectorizer("antique")
+# build_save_vectorizer("quora")
+# build_save_vectorizer("antique-queries")
 
 __all__ = ["build_save_vectorizer"]

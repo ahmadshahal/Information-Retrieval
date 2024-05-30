@@ -38,7 +38,7 @@ def match_and_rank(query: str, dataset_name: str, similarity_threshold = 0.0001)
 
 
 # todo: move to clustering section
-def clustering_match_and_rank(query: str, dataset_name: str, similarity_threshold = 0.01):
+def clustering_match_and_rank(query: str, dataset_name: str, similarity_threshold = 0.0001):
     processed_query = _process_query(query)
 
     loaded_vectorizer = get_vectorizer(dataset_name)

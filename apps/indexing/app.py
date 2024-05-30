@@ -27,4 +27,4 @@ def crawl_dataset():
 
 
 if __name__ == "__main__":
-    serve(app, host="localhost", port=8001)
+    serve(app, host="127.0.0.1", port=8001)

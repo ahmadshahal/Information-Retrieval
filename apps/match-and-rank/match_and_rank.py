@@ -9,14 +9,13 @@ from flask import jsonify
 
 
 def _process_query(query: str, dataset_name: str) -> str:
-    processed_query = process_query(query)
-    response = requests.get(f'http://localhost:8000/process-text?dataset={dataset_name}&text={processed_query}')
+    response = requests.get(f'http://127.0.0.1:8000/process-text?dataset={dataset_name}&text={query}')
     response.raise_for_status()
-    processed_text = jsonify(response.json())
+    processed_text = response.json()
     return ' '.join(processed_text)
 
 
-def match_and_rank(query: str, dataset_name: str, similarity_threshold = 0.01):
+def match_and_rank(query: str, dataset_name: str, similarity_threshold = 0.001):
     processed_query = _process_query(query, dataset_name)
 
     loaded_vectorizer = get_vectorizer(dataset_name)
@@ -36,6 +35,7 @@ def match_and_rank(query: str, dataset_name: str, similarity_threshold = 0.01):
     sorted_dict = sorted(filtered_documents.items(), key=lambda item: item[1], reverse=True)
 
     return OrderedDict(sorted_dict)
+
 
 # todo: move to clustering section
 def clustering_match_and_rank(query: str, dataset_name: str, similarity_threshold = 0.01):

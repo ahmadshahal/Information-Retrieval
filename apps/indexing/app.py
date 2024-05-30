@@ -17,9 +17,10 @@ def build_vectorizer():
     build_save_vectorizer(dataset)
     return 'true'
 
+
 @app.route('/crawl', methods=['GET'])
 @cross_origin()
-def build_vectorizer():
+def crawl_dataset():
     dataset = request.args.get('dataset')
     crawl_dataset(dataset)
     return 'true'

@@ -13,9 +13,9 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 def _process_corpus(corpus: dict[str, str], dataset_name: str) -> list:
     processed_docs = []
     for doc_key, doc_value in corpus.items():
-        response = requests.get(f'http://localhost/8000/process-text?dataset={dataset_name}&text={doc_value}')
+        response = requests.get(f'http://127.0.0.1:8000/process-text?dataset={dataset_name}&text={doc_value}')
         response.raise_for_status()
-        processed_doc_terms = jsonify(response.json())
+        processed_doc_terms = response.json()
 
         joined = ' '.join(processed_doc_terms)
         processed_docs.append(joined)
@@ -35,7 +35,7 @@ def build_save_vectorizer(dataset_name: str):
 
 # build_save_vectorizer("lifestyle")
 # _build_save_vectorizer("lifestyle-queries")
-# _build_save_vectorizer("antique")
+build_save_vectorizer("antique")
 # _build_save_vectorizer("antique-queries")
 
 __all__ = ["build_save_vectorizer"]

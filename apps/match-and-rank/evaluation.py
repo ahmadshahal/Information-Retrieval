@@ -1,3 +1,9 @@
+
+from pathlib import Path
+import sys
+
+sys.path.append(str(Path(__file__).parents[2]))
+
 from typing import Dict
 
 import ir_datasets
@@ -6,7 +12,6 @@ from ir_measures import *
 from match_and_rank import match_and_rank, clustering_match_and_rank
 
 import ir_measures
-
 
 def __get_queries_corpus(dataset_name: str) -> Dict[str, str]:
     if dataset_name == "lifestyle":
@@ -68,11 +73,11 @@ def evaluate(dataset_name: str):
     print(evaluation_results)
 
 
-# evaluate("antique")
+evaluate("antique")
 # {RR: 0.7677160258293952, R@5: 0.082357640324396, AP: 0.2327276313698704, AP@10: 0.1081760933984333, P@10: 0.4035, R@10: 0.13560506468405845}
 
 # evaluate("lifestyle")
 # {R@5: 0.23039524424416508, AP: 0.19285465840698576, P@10: 0.07985611510791388, R@10: 0.2868326584153922, AP@10: 0.17339461801684886, RR: 0.31360187349523133}
 
-evaluate("quora")
+# evaluate("quora")
 # {P@5: 0.2030800000000148, R@10: 0.8474052904415849, AP@10: 0.6943854334314166, P@3: 0.3047999999999872, P@10: 0.11340000000000916, Success@10: 0.8908, RR: 0.7378057802071185}

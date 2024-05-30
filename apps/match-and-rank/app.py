@@ -32,7 +32,6 @@ def correct_query():
     }
 
 
-
 @app.route('/ranking', methods=['GET'])
 @cross_origin()
 def get_ranking():
@@ -49,4 +48,4 @@ def get_ranking():
     }
 
 if __name__ == "__main__":
-    serve(app, host="localhost", port=8002)
+    serve(app, host="127.0.0.1", port=8002)

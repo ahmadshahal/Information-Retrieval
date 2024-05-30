@@ -1,6 +1,4 @@
-
 import ir_datasets
-from libs.storage import get_crawled_dataset
 
 def get_corpus(dataset_name: str) -> dict[str, str]:
     if dataset_name == "lifestyle":

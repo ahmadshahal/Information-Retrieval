@@ -1,7 +1,5 @@
 # Information Retrieval System
 
-![License](https://img.shields.io/badge/license-MIT-blue.svg)
-
 ## Table of Contents
 - [Introduction](#introduction)
 - [Features](#features)
